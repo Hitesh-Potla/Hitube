@@ -1,0 +1,18 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.myenv/
+myenv/
+
+# Django files
+db.sqlite3
+*.log
+
+# Django static and media files
+/static/
+/media/

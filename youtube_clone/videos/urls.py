@@ -14,5 +14,5 @@ urlpatterns = [
     path('account/upload/', views.upload_video, name='upload_video'),
     path('account/<int:video_id>/delete/', views.delete_video, name='delete_video'),
     path('account/videos/', views.get_user_videos, name='own_videos'),
-    path('history/',path('', include('history.urls')), name='history'),
+    path('history/',include('history.urls'), name='history'),
 ]
