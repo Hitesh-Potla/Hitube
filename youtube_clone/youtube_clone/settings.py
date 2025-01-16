@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'authentication',
     'comments',
     'history',
+    'search',
+    'subscriptions',
 ]
 
 MIDDLEWARE = [
@@ -137,4 +139,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+}
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch7.Elasticsearch7SearchEngine',
+        'URL': 'http://127.0.0.1:9200/',  # Elasticsearch URL
+        'INDEX_NAME': 'videos',           # Name of the index
+    },
 }

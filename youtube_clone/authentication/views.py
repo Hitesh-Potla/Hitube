@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
-# Create your views here.
+from videos.models import *
 
 User = get_user_model()
 
@@ -60,3 +60,26 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return Response({'success': True, 'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
+
+@csrf_exempt
+@api_view(['POST'])
+def create_channel(request):
+    name = request.data.get('username')
+    description = request.data.get('password')
+    if not name:
+        return Response({'error': 'Channel name is required.'}, status=status.HTTP_400_BAD_REQUEST)
+    if Channel.objects.filter(name=name).exists():
+        return Response({'error': 'Username already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+    channel = Channel.objects.create(name=name, description=description)
+    return Response({'success': True, 'message': 'Channel created successfully.'}, status=status.HTTP_201_CREATED)
+@csrf_exempt
+@api_view(['POST'])
+def delete_channel(request,channel_id):
+    try:
+        channel = Channel.objects.get(id=channel_id)
+        if channel.user!=request.user:
+            return Response({"error": "You are not authorized to delete this channel."}, status=status.HTTP_403_FORBIDDEN)
+    except Channel.DoesNotExist:
+        return Response({"error": "Channel does not exist."}, status=status.HTTP_404_NOT_FOUND)
+    channel.delete()
+    return Response({"message": "Channel Deleted successfully"}, status=status.HTTP_204_NO_CONTENT)

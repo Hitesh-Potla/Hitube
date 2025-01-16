@@ -10,7 +10,13 @@ def validate_video_file(value):
     if not value.name.endswith(('.mp4', '.mkv', '.avi')):
         raise ValidationError('Unsupported file format.')
 
+class Channel(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+
 class Video(models.Model):
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)  # Video title
     thumbnail = models.ImageField(upload_to='thumbnails/',blank=True, null=True)  # Thumbnail image
     video_file = models.FileField(upload_to='uploads/', validators=[validate_video_file])  # Video file

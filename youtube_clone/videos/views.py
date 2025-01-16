@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Video
+from .models import Video,Channel
 from .serializers import VideoSerializer
 from rest_framework.pagination import PageNumberPagination
 from comments.models import Comment
@@ -56,16 +56,23 @@ def videos_view(request):
     serializer = VideoSerializer(videos, many=True)
     return Response({'success': True, 'videos': serializer.data}, status=status.HTTP_200_OK)
     
-#view to uplaod video
+#view to upload video
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def upload_video(request):
+def upload_video(request,channel_id):
     if 'video_file' not in request.FILES or 'title' not in request.data:
         return Response({"error": "Both title and video file are required."}, status=status.HTTP_400_BAD_REQUEST)
-
+    # channel=request.data.get('channel')
     video_file = request.FILES['video_file']
     title = request.data.get('title')
     user = request.user  # The currently authenticated user
+
+    try:
+        channel = Channel.objects.get(id=channel_id)
+        if channel.user != user:
+            return Response({"error": "You are not authorized to upload videos to this channel."}, status=status.HTTP_403_FORBIDDEN)
+    except Channel.DoesNotExist:
+        return Response({"error": "Channel does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
     # Check if a thumbnail is provided
     thumbnail = request.FILES.get('thumbnail', None)
@@ -76,6 +83,7 @@ def upload_video(request):
 
     # Create the video instance
     video = Video.objects.create(
+        channel=channel,
         title=title,
         video_file=video_file,
         uploaded_by=user,
@@ -89,10 +97,16 @@ def upload_video(request):
 #view to delete video
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-def delete_video(request, video_id):
+def delete_video(request,channel_id,video_id):
+    try:
+        channel = Channel.objects.get(id=channel_id)
+        if channel.user != request.user:
+            return Response({"error": "You are not authorized to upload videos to this channel."}, status=status.HTTP_403_FORBIDDEN)
+    except Channel.DoesNotExist:
+        return Response({"error": "Channel does not exist."}, status=status.HTTP_404_NOT_FOUND)
     try:
         # Retrieve the video object using the video_id
-        video = Video.objects.get(id=video_id)
+        video = Video.objects.get(id=video_id,channel=channel)
         
         # Check if the authenticated user is the owner of the video
         if video.uploaded_by != request.user:
@@ -108,8 +122,8 @@ def delete_video(request, video_id):
 #view to list user own videos
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_user_videos(request):
-    videos = Video.objects.filter(uploaded_by=request.user)
+def get_user_videos(request,channel_id):
+    videos = Video.objects.filter(channel=channel_id)
     serializer = VideoSerializer(videos, many=True)
     return Response({'success': True, 'videos': serializer.data}, status=status.HTTP_200_OK)
 
