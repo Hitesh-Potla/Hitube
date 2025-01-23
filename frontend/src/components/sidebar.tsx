@@ -48,9 +48,11 @@ export function Sidebar() {
           <div className="px-4 text-sm">
             Sign in to like videos, comment, and subscribe.
           </div>
-          <Button variant="outline" className="gap-2">
-            Sign in
-          </Button>
+          <a href="signin">
+            <Button variant="outline" className="gap-2">
+              Sign in
+            </Button>
+          </a>
         </div>
         <Separator className="my-2" />
         <div className="space-y-1">

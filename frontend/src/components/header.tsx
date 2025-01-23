@@ -66,7 +66,7 @@ export function Header() {
         </Button>
         <a href="/signup">
           <Button variant="outline" className="gap-2">
-            Sign in
+            Sign up
           </Button>
         </a>
       </div>
