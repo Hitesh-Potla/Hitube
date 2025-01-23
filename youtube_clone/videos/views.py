@@ -13,7 +13,7 @@ from .serializers import VideoSerializer
 from rest_framework.pagination import PageNumberPagination
 from comments.models import Comment
 from comments.serializers import CommentSerializer
-
+from .recommender import get_recommendations
 
 # import random
 # from .serializers import VideoSerializer
@@ -52,9 +52,13 @@ User = get_user_model()
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def videos_view(request):
-    videos = Video.objects.all()
-    serializer = VideoSerializer(videos, many=True)
-    return Response({'success': True, 'videos': serializer.data}, status=status.HTTP_200_OK)
+    try:
+        videos = get_recommendations(request.user)
+        serializer = VideoSerializer(videos, many=True)
+        return Response({'success': True, 'videos': serializer.data}, status=status.HTTP_200_OK)
+    except Exception as e:
+        # Handle unexpected errors gracefully
+        return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 #view to upload video
 @api_view(['POST'])
@@ -137,6 +141,9 @@ def play_video(request, video_id):
     if not video:
         return Response({'error': 'Video not found'}, status=404)
 
+    video.views += 1
+    video.save()
+    
     # Get comments for the video
     comments = Comment.objects.filter(video=video)
 
@@ -154,3 +161,48 @@ def play_video(request, video_id):
         'video': video_serializer.data,
         'comments': comment_serializer.data
     })
+
+#view to recommend videos based on history(context based filtering)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def video_recommendations_view(request, video_id):
+    try:
+        videos = get_recommendations(video_id)
+        serializer = VideoSerializer(videos, many=True)
+        return Response({'success': True, 'videos': serializer.data}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like(request, video_id):
+    # Get the video by ID, return 404 if not found
+    video = get_object_or_404(Video, id=video_id)
+
+    # Check if the user has already liked the video
+    if video.is_liked:
+        return Response({'error': 'You have already liked this video'}, status=400)
+
+    # Set the video as liked and increment the like count
+    video.is_liked = True
+    video.likes += 1  # Increment the like count
+    video.save()
+
+    return Response({'success': True, 'likes': video.likes, 'is_liked': video.is_liked})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def remove_like(request, video_id):
+    # Get the video by ID, return 404 if not found
+    video = get_object_or_404(Video, id=video_id)
+
+    # Check if the user has already liked the video
+    if not video.is_liked:
+        return Response({'error': 'You have not liked this video yet'}, status=400)
+
+    # Remove the like and decrement the like count
+    video.is_liked = False
+    video.likes -= 1  # Decrement the like count
+    video.save()
+
+    return Response({'success': True, 'likes': video.likes, 'is_liked': video.is_liked})

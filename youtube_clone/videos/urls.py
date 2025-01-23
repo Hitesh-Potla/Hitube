@@ -30,4 +30,11 @@ urlpatterns = [
     # Subscriptions
     path('subscriptions/<int:channel_id>/subscribe/', subscription_views.subscribe, name='subscribe'),
     path('subscriptions/<int:channel_id>/unsubscribe/', subscription_views.unsubscribe, name='unsubscribe'),
+
+    # Recommendation view
+    path('recommendations/', views.recommendations_view, name='recommendations'),
+
+    # Like/remove like a video
+    path('like/<int:video_id>/', views.like, name='like'),
+    path('remove-like/<int:video_id>/', views.remove_like, name='remove_like'),
 ]
