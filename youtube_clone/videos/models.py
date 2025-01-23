@@ -22,7 +22,7 @@ class Video(models.Model):
     # Existing fields
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    tags = models.ManyToManyField(Tag)
+    # tags = models.ManyToManyField(Tag)
     thumbnail = models.ImageField(upload_to='thumbnails/', blank=True, null=True)
     video_file = models.FileField(upload_to='uploads/', validators=[validate_video_file])
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='videos')

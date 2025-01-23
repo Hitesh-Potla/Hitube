@@ -13,7 +13,7 @@ from .serializers import VideoSerializer
 from rest_framework.pagination import PageNumberPagination
 from comments.models import Comment
 from comments.serializers import CommentSerializer
-from .recommender import get_recommendations
+# from .recommender import get_recommendations
 
 # import random
 # from .serializers import VideoSerializer
@@ -52,13 +52,19 @@ User = get_user_model()
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def videos_view(request):
-    try:
-        videos = get_recommendations(request.user)
-        serializer = VideoSerializer(videos, many=True)
-        return Response({'success': True, 'videos': serializer.data}, status=status.HTTP_200_OK)
-    except Exception as e:
+        try:
+            videos = Video.objects.all()
+            serializer = VideoSerializer(videos, many=True)
+            return Response({'success': True, 'videos': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # try:
+        # videos = get_recommendations(request.user)
+        # serializer = VideoSerializer(videos, many=True)
+        # return Response({'success': True, 'videos': serializer.data}, status=status.HTTP_200_OK)
+    # except Exception as e:
         # Handle unexpected errors gracefully
-        return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 #view to upload video
 @api_view(['POST'])
@@ -163,15 +169,15 @@ def play_video(request, video_id):
     })
 
 #view to recommend videos based on history(context based filtering)
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def video_recommendations_view(request, video_id):
-    try:
-        videos = get_recommendations(video_id)
-        serializer = VideoSerializer(videos, many=True)
-        return Response({'success': True, 'videos': serializer.data}, status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def video_recommendations_view(request, video_id):
+#     try:
+#         videos = get_recommendations(video_id)
+#         serializer = VideoSerializer(videos, many=True)
+#         return Response({'success': True, 'videos': serializer.data}, status=status.HTTP_200_OK)
+#     except Exception as e:
+#         return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

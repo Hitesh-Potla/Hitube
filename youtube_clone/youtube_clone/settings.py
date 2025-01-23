@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-b^++wofr*arv%#a!oq8-j^q+c%$vh3jf9k)y12816z3_$%@9m!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '1.0.0.127.in-addr.arpa',
+]
 
 
 # Application definition
@@ -47,9 +51,12 @@ INSTALLED_APPS = [
     'history',
     'search',
     'subscriptions',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Must be at the top
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -148,3 +155,4 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'videos',           # Name of the index
     },
 }
+CORS_ALLOW_ALL_ORIGINS = True

@@ -32,7 +32,7 @@ urlpatterns = [
     path('subscriptions/<int:channel_id>/unsubscribe/', subscription_views.unsubscribe, name='unsubscribe'),
 
     # Recommendation view
-    path('recommendations/', views.recommendations_view, name='recommendations'),
+    # path('recommendations/', views.recommendations_view, name='recommendations'),
 
     # Like/remove like a video
     path('like/<int:video_id>/', views.like, name='like'),
