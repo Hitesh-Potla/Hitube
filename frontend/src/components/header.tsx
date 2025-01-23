@@ -64,9 +64,11 @@ export function Header() {
             <Moon className="h-5 w-5" />
           )}
         </Button>
-        <Button variant="outline" className="gap-2">
-          Sign in
-        </Button>
+        <a href="/signup">
+          <Button variant="outline" className="gap-2">
+            Sign in
+          </Button>
+        </a>
       </div>
     </header>
   );
