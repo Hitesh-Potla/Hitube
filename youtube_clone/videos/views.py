@@ -50,7 +50,7 @@ User = get_user_model()
 
 # Video List View
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def videos_view(request):
         try:
             videos = Video.objects.all()

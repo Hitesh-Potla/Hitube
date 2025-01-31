@@ -6,13 +6,13 @@ User = get_user_model()
 
 class VideoSerializer(serializers.ModelSerializer):
     uploaded_by = serializers.StringRelatedField()  # Display the username instead of the user ID
-    comments_count = serializers.SerializerMethodField()  # Custom field for comment count
+    comments_count = serializers.SerializerMethodField()
     views = serializers.IntegerField()  # Include views field
     likes = serializers.IntegerField() 
     is_liked=serializers.BooleanField()
     class Meta:
         model = Video
-        fields = ['id', 'title', 'thumbnail', 'video_file', 'uploaded_by', 'upload_date', 'comments_count', 'views','likes','is_liked']  # Added 'views'
+        fields = ['id', 'title', 'thumbnail', 'video_file', 'uploaded_by', 'comments_count' , 'upload_date', 'views','likes','is_liked']  # Added 'views'
 
     def get_comments_count(self, obj):
-        return obj.comments.count()  # Return the count of comments for the video
+        return obj.video_comments.count()
