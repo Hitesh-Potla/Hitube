@@ -2,7 +2,7 @@
 import React from "react";
 import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar";
-import VideoCard from "@/components/video-card";
+// import VideoHome from "@/app/videoHome/page";
 
 const App = () => {
   return (
@@ -10,12 +10,7 @@ const App = () => {
       <Header />
       <div className="flex">
         <Sidebar />
-        <div className="video-cards flex flex-wrap">
-          <VideoCard />
-          <VideoCard />
-          <VideoCard />
-          <VideoCard />
-        </div>
+        <div className="video-cards flex flex-wrap"></div>
       </div>
     </div>
   );
