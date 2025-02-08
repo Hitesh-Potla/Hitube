@@ -1,19 +1,9 @@
 from django.urls import path, include
-from . import views 
-from authentication import views as auth_views
+from . import views
 from comments import views as comment_views
 from subscriptions import views as subscription_views
 
 urlpatterns = [
-    # Authentication
-    path('signup/', auth_views.signup_view, name='signup'),
-    path('login/', auth_views.login_view, name='login'),
-    path('logout/', auth_views.logout_view, name='logout'),
-    
-    # Channel Management
-    path('account/create-channel/', auth_views.create_channel, name='create_channel'),
-    path('account/delete-channel/<int:channel_id>/', auth_views.delete_channel, name='delete_channel'),
-    
     # Videos
     path('videos/', views.videos_view, name='videos'),  # Home page with all videos
     path('videos/<int:video_id>/', views.play_video, name='play_video'),
@@ -23,7 +13,7 @@ urlpatterns = [
 
     # History
     path('history/', include('history.urls'), name='history'),
-    
+
     # Search
     path('search/', include('search.urls'), name='search'),
 
@@ -37,4 +27,7 @@ urlpatterns = [
     # Like/remove like a video
     path('like/<int:video_id>/', views.like, name='like'),
     path('remove-like/<int:video_id>/', views.remove_like, name='remove_like'),
+
+    # Include authentication URLs
+    path('auth/', include('authentication.urls')),  # Delegating authentication to authentication app
 ]
